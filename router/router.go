@@ -35,7 +35,7 @@ func Router(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./public/"+file)
 		return
 	case strings.Index(r.URL.Path, "/users"):
-		res = UserRouter(r, reqBody)
+		res = UserRouter2(r, reqBody)
 	default:
 		res = handlers.HandleResourceNotFound()
 	}
