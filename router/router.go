@@ -27,8 +27,14 @@ func Router(w http.ResponseWriter, r *http.Request) {
 	log.Printf("request body: %s", string(reqBody))
 	var res *helpers.JsonResponse
 
-	switch {
-	case strings.Index(r.URL.Path, "/users") == 0:
+	switch 0 {
+	case strings.Index(r.URL.Path, "/public"):
+		path := strings.TrimRight(r.URL.Path, "/")
+		paths := strings.Split(path, "/")
+		file := paths[len(paths)-1]
+		http.ServeFile(w, r, "./public/"+file)
+		return
+	case strings.Index(r.URL.Path, "/users"):
 		res = UserRouter(r, reqBody)
 	default:
 		res = handlers.HandleResourceNotFound()
