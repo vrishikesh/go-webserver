@@ -1,10 +1,9 @@
 package handlers
 
 import (
-	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
+	"net/url"
+	"strings"
 
 	"github.com/vrishikesh/go-webserver/helpers"
 )
@@ -12,7 +11,7 @@ import (
 var usersDB []User
 
 type GetUsersRequest struct {
-	Search string `json:"search"`
+	Search string
 }
 
 type GetUsersResponse struct {
@@ -25,23 +24,27 @@ type User struct {
 }
 
 func GetUsers(p *GetUsersRequest) (*GetUsersResponse, error) {
-	users := make([]User, len(usersDB))
-	copy(users, usersDB)
+	users := make([]User, 0)
+	for _, u := range usersDB {
+		if strings.Contains(u.Name, p.Search) {
+			users = append(users, u)
+		}
+	}
 	return &GetUsersResponse{Users: users}, nil
 }
 
-func ParseGetUsers(data []byte) (*GetUsersRequest, error) {
+func ParseGetUsers(values url.Values) (*GetUsersRequest, error) {
 	var req GetUsersRequest
-	err := json.Unmarshal(data, &req)
-	if err != nil {
-		log.Printf("could not unmarshal body %s into %T", string(data), req)
-		return nil, fmt.Errorf("could not unmarshal body %s into %T", string(data), req)
+	if v, ok := values["s"]; ok {
+		if len(v) > 0 {
+			req.Search = v[0]
+		}
 	}
 	return &req, nil
 }
 
-func HandleGetUsers(data []byte) *helpers.JsonResponse {
-	req, err := ParseGetUsers(data)
+func HandleGetUsers(values url.Values) *helpers.JsonResponse {
+	req, err := ParseGetUsers(values)
 	if err != nil {
 		return helpers.ErrorResponse(http.StatusBadRequest, err)
 	}

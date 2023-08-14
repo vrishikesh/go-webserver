@@ -13,7 +13,7 @@ var SingleUserRegex, _ = regexp.Compile(`/users/(\d+)`)
 func UserRouter(r *http.Request, data []byte) *helpers.JsonResponse {
 	switch {
 	case r.Method == http.MethodGet && r.URL.Path == "/users":
-		return handlers.HandleGetUsers(data)
+		return handlers.HandleGetUsers(r.URL.Query())
 	case r.Method == http.MethodGet && SingleUserRegex.MatchString(r.URL.Path):
 		return handlers.HandleGetUser(SingleUserRegex, r.URL.Path)
 	case r.Method == http.MethodPost && r.URL.Path == "/users":
