@@ -1,5 +1,11 @@
 package handlers
 
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+)
+
 type GetUsersRequest struct {
 	Id []int `json:"id"`
 }
@@ -25,4 +31,14 @@ func GetUsers(p *GetUsersRequest) (*GetUsersResponse, error) {
 	}
 	responseBody := GetUsersResponseBody{Users: users}
 	return &GetUsersResponse{Body: responseBody}, nil
+}
+
+func ParseGetUsers(data []byte) (*GetUsersRequest, error) {
+	var req GetUsersRequest
+	err := json.Unmarshal(data, &req)
+	if err != nil {
+		log.Printf("could not unmarshal body %s into %T", string(data), req)
+		return nil, fmt.Errorf("could not unmarshal body %s into %T", string(data), req)
+	}
+	return &req, nil
 }
