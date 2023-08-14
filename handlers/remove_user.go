@@ -10,30 +10,29 @@ import (
 	"github.com/vrishikesh/go-webserver/helpers"
 )
 
-type GetUserRequest struct {
+type RemoveUserRequest struct {
 	Id int `json:"id"`
 }
 
-type GetUserResponse struct {
-	User User `json:"user"`
-}
+type RemoveUserResponse struct{}
 
-func GetUser(p *GetUserRequest) (*GetUserResponse, error) {
+func RemoveUser(p *RemoveUserRequest) (*RemoveUserResponse, error) {
 	var user User
-	for _, u := range usersDB {
+	for i, u := range usersDB {
 		if u.Id == p.Id {
 			user = u
+			usersDB = append(usersDB[:i], usersDB[i+1:]...)
 			break
 		}
 	}
 	if user.Id == 0 {
-		return nil, fmt.Errorf("could not find user with id %d", p.Id)
+		return nil, fmt.Errorf("could not remove user")
 	}
-	return &GetUserResponse{User: user}, nil
+	return nil, nil
 }
 
-func ParseGetUser(regex *regexp.Regexp, path string) (*GetUserRequest, error) {
-	var req GetUserRequest
+func ParseRemoveUser(regex *regexp.Regexp, path string) (*RemoveUserRequest, error) {
+	var req RemoveUserRequest
 	sss := regex.FindAllStringSubmatch(path, -1)
 	ss := sss[0]
 	if len(ss) < 2 {
@@ -44,14 +43,14 @@ func ParseGetUser(regex *regexp.Regexp, path string) (*GetUserRequest, error) {
 	return &req, nil
 }
 
-func HandleGetUser(regex *regexp.Regexp, path string) *helpers.JsonResponse {
-	req, err := ParseGetUser(regex, path)
+func HandleRemoveUser(regex *regexp.Regexp, path string) *helpers.JsonResponse {
+	req, err := ParseRemoveUser(regex, path)
 	if err != nil {
 		return helpers.ErrorResponse(http.StatusBadRequest, err)
 	}
-	data, err := GetUser(req)
+	data, err := RemoveUser(req)
 	if err != nil {
 		return helpers.ErrorResponse(http.StatusInternalServerError, err)
 	}
-	return helpers.SuccessResponse(http.StatusOK, data)
+	return helpers.SuccessResponse(http.StatusNoContent, data)
 }

@@ -30,7 +30,9 @@ func UpdateUser(p *UpdateUserRequest) (*UpdateUserResponse, error) {
 			break
 		}
 	}
-
+	if user.Id == 0 {
+		return nil, fmt.Errorf("could not update user with id %d", p.Id)
+	}
 	return &UpdateUserResponse{User: user}, nil
 }
 
@@ -46,7 +48,7 @@ func ParseUpdateUser(data []byte, regex *regexp.Regexp, path string) (*UpdateUse
 	ss := sss[0]
 	if len(ss) < 2 {
 		log.Printf("could not find param user id: %v", ss)
-		return nil, fmt.Errorf("could not find param user id%v", ss)
+		return nil, fmt.Errorf("could not find param user id: %v", ss)
 	}
 	req.Id, _ = strconv.Atoi(ss[1])
 

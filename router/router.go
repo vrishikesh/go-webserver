@@ -34,11 +34,8 @@ func Router(w http.ResponseWriter, r *http.Request) {
 		res = handlers.HandleResourceNotFound()
 	}
 
-	if res.Error != nil {
-		w.WriteHeader(res.Status)
+	if res.Error != "" {
 		log.Printf("error: %s", res.Error)
-		fmt.Fprint(w, "something went wrong")
-		return
 	}
 
 	resBody, err := json.Marshal(res)

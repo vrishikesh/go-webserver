@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/vrishikesh/go-webserver/helpers"
 )
@@ -18,6 +19,11 @@ type CreateUserResponse struct {
 }
 
 func CreateUser(p *CreateUserRequest) (*CreateUserResponse, error) {
+	if strings.TrimSpace(p.Name) == "" {
+		log.Printf("name cannot be empty")
+		return nil, fmt.Errorf("name cannot be empty")
+	}
+
 	var user User
 	user.Id = len(usersDB) + 1
 	user.Name = p.Name
@@ -30,7 +36,7 @@ func ParseCreateUser(data []byte) (*CreateUserRequest, error) {
 	err := json.Unmarshal(data, &req)
 	if err != nil {
 		log.Printf("could not unmarshal body %s into %T", string(data), req)
-		return nil, fmt.Errorf("could not unmarshal body %s into %T", string(data), req)
+		return nil, fmt.Errorf("could not parse body")
 	}
 	return &req, nil
 }
