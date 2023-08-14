@@ -5,25 +5,22 @@ import (
 	"regexp"
 
 	"github.com/vrishikesh/go-webserver/handlers"
+	"github.com/vrishikesh/go-webserver/helpers"
 )
 
-var GetUserRegex, _ = regexp.Compile(`/users/(\d+)`)
+var GetPutUserRegex, _ = regexp.Compile(`/users/(\d+)`)
 
-func UserRouter(r *http.Request, data []byte) (any, error) {
+func UserRouter(r *http.Request, data []byte) *helpers.JsonResponse {
 	switch {
 	case r.Method == http.MethodGet && r.URL.Path == "/users":
-		req, err := handlers.ParseGetUsers(data)
-		if err != nil {
-			return nil, err
-		}
-		return handlers.GetUsers(req)
-	case r.Method == http.MethodGet && GetUserRegex.MatchString(r.URL.Path):
-		req, err := handlers.ParseGetUser(GetUserRegex, r.URL.Path)
-		if err != nil {
-			return nil, err
-		}
-		return handlers.GetUser(req)
+		return handlers.HandleGetUsers(data)
+	case r.Method == http.MethodGet && GetPutUserRegex.MatchString(r.URL.Path):
+		return handlers.HandleGetUser(GetPutUserRegex, r.URL.Path)
+	case r.Method == http.MethodPost && r.URL.Path == "/users":
+		return handlers.HandleCreateUser(data)
+	case r.Method == http.MethodPut && GetPutUserRegex.MatchString(r.URL.Path):
+		return handlers.HandleUpdateUser(data, GetPutUserRegex, r.URL.Path)
 	default:
-		return handlers.MethodNotAllowed(nil)
+		return handlers.HandleMethodNotAllowed()
 	}
 }

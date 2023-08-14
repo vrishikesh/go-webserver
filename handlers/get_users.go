@@ -4,17 +4,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
+
+	"github.com/vrishikesh/go-webserver/helpers"
 )
 
+var usersDB []User
+
 type GetUsersRequest struct {
-	Id []int `json:"id"`
+	Search string `json:"search"`
 }
 
 type GetUsersResponse struct {
-	Body GetUsersResponseBody `json:"body"`
-}
-
-type GetUsersResponseBody struct {
 	Users []User `json:"users"`
 }
 
@@ -24,13 +25,9 @@ type User struct {
 }
 
 func GetUsers(p *GetUsersRequest) (*GetUsersResponse, error) {
-	users := []User{}
-	for _, v := range p.Id {
-		user := User{Id: v, Name: "random"}
-		users = append(users, user)
-	}
-	responseBody := GetUsersResponseBody{Users: users}
-	return &GetUsersResponse{Body: responseBody}, nil
+	users := make([]User, len(usersDB))
+	copy(users, usersDB)
+	return &GetUsersResponse{Users: users}, nil
 }
 
 func ParseGetUsers(data []byte) (*GetUsersRequest, error) {
@@ -41,4 +38,16 @@ func ParseGetUsers(data []byte) (*GetUsersRequest, error) {
 		return nil, fmt.Errorf("could not unmarshal body %s into %T", string(data), req)
 	}
 	return &req, nil
+}
+
+func HandleGetUsers(data []byte) *helpers.JsonResponse {
+	req, err := ParseGetUsers(data)
+	if err != nil {
+		return helpers.ErrorResponse(http.StatusBadRequest, err)
+	}
+	users, err := GetUsers(req)
+	if err != nil {
+		return helpers.ErrorResponse(http.StatusInternalServerError, err)
+	}
+	return helpers.SuccessResponse(http.StatusOK, users)
 }

@@ -1,12 +1,12 @@
 package handlers
 
-type ResourceNotFoundRequest struct{}
-type ResourceNotFoundResponse struct {
-	Error string `json:"error"`
-}
+import (
+	"net/http"
 
-func ResourceNotFound(*ResourceNotFoundRequest) (*ResourceNotFoundResponse, error) {
-	return &ResourceNotFoundResponse{
-		Error: "resource not found",
-	}, nil
+	"github.com/vrishikesh/go-webserver/helpers"
+)
+
+func HandleResourceNotFound() *helpers.JsonResponse {
+	err := helpers.NewResourceNotFoundError()
+	return helpers.ErrorResponse(http.StatusNotFound, err)
 }

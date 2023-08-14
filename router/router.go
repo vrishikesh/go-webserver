@@ -10,10 +10,11 @@ import (
 	"time"
 
 	"github.com/vrishikesh/go-webserver/handlers"
+	"github.com/vrishikesh/go-webserver/helpers"
 )
 
 func Router(w http.ResponseWriter, r *http.Request) {
-	defer handlers.TimeTracker(time.Now())
+	defer helpers.TimeTracker(time.Now())
 	log.Printf("request: path [%s], method [%s]", r.URL.Path, r.Method)
 
 	reqBody, err := io.ReadAll(r.Body)
@@ -24,18 +25,18 @@ func Router(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("request body: %s", string(reqBody))
-	var res any
+	var res *helpers.JsonResponse
 
 	switch {
 	case strings.Index(r.URL.Path, "/users") == 0:
-		res, err = UserRouter(r, reqBody)
+		res = UserRouter(r, reqBody)
 	default:
-		res, err = handlers.ResourceNotFound(nil)
+		res = handlers.HandleResourceNotFound()
 	}
 
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Printf("error: %s", err)
+	if res.Error != nil {
+		w.WriteHeader(res.Status)
+		log.Printf("error: %s", res.Error)
 		fmt.Fprint(w, "something went wrong")
 		return
 	}
@@ -49,7 +50,7 @@ func Router(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(res.Status)
 	log.Printf("response body: %s", string(resBody))
 	fmt.Fprint(w, string(resBody))
 }

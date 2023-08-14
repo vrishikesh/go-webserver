@@ -1,12 +1,12 @@
 package handlers
 
-type MethodNotAllowedRequest struct{}
-type MethodNotAllowedResponse struct {
-	Error string `json:"error"`
-}
+import (
+	"net/http"
 
-func MethodNotAllowed(*MethodNotAllowedRequest) (*MethodNotAllowedResponse, error) {
-	return &MethodNotAllowedResponse{
-		Error: "method not allowed",
-	}, nil
+	"github.com/vrishikesh/go-webserver/helpers"
+)
+
+func HandleMethodNotAllowed() *helpers.JsonResponse {
+	err := helpers.NewMethodNotAllowedError()
+	return helpers.ErrorResponse(http.StatusMethodNotAllowed, err)
 }
