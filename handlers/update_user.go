@@ -58,11 +58,11 @@ func ParseUpdateUser(data []byte, regex *regexp.Regexp, path string) (*UpdateUse
 func HandleUpdateUser(data []byte, regex *regexp.Regexp, path string) *helpers.JsonResponse {
 	req, err := ParseUpdateUser(data, regex, path)
 	if err != nil {
-		return helpers.ErrorResponse(http.StatusBadRequest, err)
+		return helpers.NewErrorResponse(err, http.StatusBadRequest)
 	}
 	user, err := UpdateUser(req)
 	if err != nil {
-		return helpers.ErrorResponse(http.StatusInternalServerError, err)
+		return helpers.NewErrorResponse(err, http.StatusInternalServerError)
 	}
-	return helpers.SuccessResponse(http.StatusOK, user)
+	return helpers.NewSuccessResponse(user, http.StatusOK)
 }

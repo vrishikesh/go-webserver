@@ -44,11 +44,11 @@ func ParseCreateUser(data []byte) (*CreateUserRequest, error) {
 func HandleCreateUser(data []byte) *helpers.JsonResponse {
 	req, err := ParseCreateUser(data)
 	if err != nil {
-		return helpers.ErrorResponse(http.StatusBadRequest, err)
+		return helpers.NewErrorResponse(err, http.StatusBadRequest)
 	}
 	user, err := CreateUser(req)
 	if err != nil {
-		return helpers.ErrorResponse(http.StatusInternalServerError, err)
+		return helpers.NewErrorResponse(err, http.StatusInternalServerError)
 	}
-	return helpers.SuccessResponse(http.StatusCreated, user)
+	return helpers.NewSuccessResponse(user, http.StatusCreated)
 }

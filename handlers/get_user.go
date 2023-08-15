@@ -47,11 +47,11 @@ func ParseGetUser(regex *regexp.Regexp, path string) (*GetUserRequest, error) {
 func HandleGetUser(regex *regexp.Regexp, path string) *helpers.JsonResponse {
 	req, err := ParseGetUser(regex, path)
 	if err != nil {
-		return helpers.ErrorResponse(http.StatusBadRequest, err)
+		return helpers.NewErrorResponse(err, http.StatusBadRequest)
 	}
 	data, err := GetUser(req)
 	if err != nil {
-		return helpers.ErrorResponse(http.StatusInternalServerError, err)
+		return helpers.NewErrorResponse(err, http.StatusInternalServerError)
 	}
-	return helpers.SuccessResponse(http.StatusOK, data)
+	return helpers.NewSuccessResponse(data, http.StatusOK)
 }

@@ -46,11 +46,11 @@ func ParseRemoveUser(regex *regexp.Regexp, path string) (*RemoveUserRequest, err
 func HandleRemoveUser(regex *regexp.Regexp, path string) *helpers.JsonResponse {
 	req, err := ParseRemoveUser(regex, path)
 	if err != nil {
-		return helpers.ErrorResponse(http.StatusBadRequest, err)
+		return helpers.NewErrorResponse(err, http.StatusBadRequest)
 	}
 	data, err := RemoveUser(req)
 	if err != nil {
-		return helpers.ErrorResponse(http.StatusInternalServerError, err)
+		return helpers.NewErrorResponse(err, http.StatusInternalServerError)
 	}
-	return helpers.SuccessResponse(http.StatusNoContent, data)
+	return helpers.NewSuccessResponse(data, http.StatusNoContent)
 }

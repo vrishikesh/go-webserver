@@ -8,5 +8,5 @@ import (
 
 func HandleMethodNotAllowed() *helpers.JsonResponse {
 	err := helpers.NewMethodNotAllowedError()
-	return helpers.ErrorResponse(http.StatusMethodNotAllowed, err)
+	return helpers.NewErrorResponse(err, http.StatusMethodNotAllowed)
 }

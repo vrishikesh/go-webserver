@@ -46,11 +46,11 @@ func ParseGetUsers(values url.Values) (*GetUsersRequest, error) {
 func HandleGetUsers(values url.Values) *helpers.JsonResponse {
 	req, err := ParseGetUsers(values)
 	if err != nil {
-		return helpers.ErrorResponse(http.StatusBadRequest, err)
+		return helpers.NewErrorResponse(err, http.StatusBadRequest)
 	}
 	users, err := GetUsers(req)
 	if err != nil {
-		return helpers.ErrorResponse(http.StatusInternalServerError, err)
+		return helpers.NewErrorResponse(err, http.StatusInternalServerError)
 	}
-	return helpers.SuccessResponse(http.StatusOK, users)
+	return helpers.NewSuccessResponse(users, http.StatusOK)
 }

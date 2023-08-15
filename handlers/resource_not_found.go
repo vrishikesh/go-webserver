@@ -8,5 +8,5 @@ import (
 
 func HandleResourceNotFound() *helpers.JsonResponse {
 	err := helpers.NewResourceNotFoundError()
-	return helpers.ErrorResponse(http.StatusNotFound, err)
+	return helpers.NewErrorResponse(err, http.StatusNotFound)
 }

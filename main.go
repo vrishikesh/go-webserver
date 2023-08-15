@@ -11,22 +11,15 @@ import (
 )
 
 func main() {
-	// srv := http.Server{
-	// 	Addr:    ":8080",
-	// 	Handler: router.Router(),
-	// }
-
-	// if err := srv.ListenAndServe(); err != nil {
-	// 	log.Fatal(err)
-	// }
-
 	mux := http.NewServeMux()
 	mux.Handle("/time/", handlers.NewTimeHandler(time.RFC1123))
 	mux.Handle("/users/", router.NewUserHandler())
 	mux.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
 
-	wrapper := middlewares.NewRequestLogger(mux)
+	requestLoggerMiddleware := middlewares.NewRequestLogger(mux)
 
 	log.Printf("starting server")
-	log.Fatal(http.ListenAndServe(":8080", wrapper))
+	if err := http.ListenAndServe(":8080", requestLoggerMiddleware); err != nil {
+		log.Fatal(err)
+	}
 }
