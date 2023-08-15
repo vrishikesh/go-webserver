@@ -65,8 +65,8 @@ func HandleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	user, err := UpdateUser(req)
 	if err != nil {
-		helpers.NewErrorResponse(err, http.StatusInternalServerError).Send(w)
+		helpers.NewErrorResponse(err).Send(w)
 		return
 	}
-	helpers.NewSuccessResponse(user, http.StatusOK).Send(w)
+	helpers.NewSuccessResponse(user).Send(w)
 }

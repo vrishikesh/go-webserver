@@ -51,7 +51,7 @@ func HandleRemoveUser(w http.ResponseWriter, r *http.Request) {
 	}
 	data, err := RemoveUser(req)
 	if err != nil {
-		helpers.NewErrorResponse(err, http.StatusInternalServerError).Send(w)
+		helpers.NewErrorResponse(err).Send(w)
 		return
 	}
 	helpers.NewSuccessResponse(data, http.StatusNoContent).Send(w)

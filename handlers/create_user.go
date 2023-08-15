@@ -51,7 +51,7 @@ func HandleCreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	user, err := CreateUser(req)
 	if err != nil {
-		helpers.NewErrorResponse(err, http.StatusInternalServerError).Send(w)
+		helpers.NewErrorResponse(err).Send(w)
 		return
 	}
 	helpers.NewSuccessResponse(user, http.StatusCreated).Send(w)

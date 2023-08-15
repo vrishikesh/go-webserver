@@ -52,8 +52,8 @@ func HandleGetUsers(w http.ResponseWriter, r *http.Request) {
 	}
 	users, err := GetUsers(req)
 	if err != nil {
-		helpers.NewErrorResponse(err, http.StatusInternalServerError).Send(w)
+		helpers.NewErrorResponse(err).Send(w)
 		return
 	}
-	helpers.NewSuccessResponse(users, http.StatusOK).Send(w)
+	helpers.NewSuccessResponse(users).Send(w)
 }
