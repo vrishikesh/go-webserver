@@ -42,20 +42,17 @@ func ParseCreateUser(data []byte) (*CreateUserRequest, error) {
 	return &req, nil
 }
 
-func HandleCreateUser(data []byte) *helpers.JsonResponse {
-	req, err := ParseCreateUser(data)
+func HandleCreateUser(w http.ResponseWriter, r *http.Request) {
+	b, _ := io.ReadAll(r.Body)
+	req, err := ParseCreateUser(b)
 	if err != nil {
-		return helpers.NewErrorResponse(err, http.StatusBadRequest)
+		helpers.NewErrorResponse(err, http.StatusBadRequest).Send(w)
+		return
 	}
 	user, err := CreateUser(req)
 	if err != nil {
-		return helpers.NewErrorResponse(err, http.StatusInternalServerError)
+		helpers.NewErrorResponse(err, http.StatusInternalServerError).Send(w)
+		return
 	}
-	return helpers.NewSuccessResponse(user, http.StatusCreated)
-}
-
-func HandleCreateUserRoute(w http.ResponseWriter, r *http.Request) {
-	b, _ := io.ReadAll(r.Body)
-	res := HandleCreateUser(b)
-	res.Send(w)
+	helpers.NewSuccessResponse(user, http.StatusCreated).Send(w)
 }

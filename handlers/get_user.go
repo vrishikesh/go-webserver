@@ -44,19 +44,16 @@ func ParseGetUser(regex *regexp.Regexp, path string) (*GetUserRequest, error) {
 	return &req, nil
 }
 
-func HandleGetUser(regex *regexp.Regexp, path string) *helpers.JsonResponse {
-	req, err := ParseGetUser(regex, path)
+func HandleGetUser(w http.ResponseWriter, r *http.Request) {
+	req, err := ParseGetUser(helpers.UserRouteRegex, r.URL.Path)
 	if err != nil {
-		return helpers.NewErrorResponse(err, http.StatusBadRequest)
+		helpers.NewErrorResponse(err, http.StatusBadRequest).Send(w)
+		return
 	}
 	data, err := GetUser(req)
 	if err != nil {
-		return helpers.NewErrorResponse(err, http.StatusInternalServerError)
+		helpers.NewErrorResponse(err, http.StatusInternalServerError).Send(w)
+		return
 	}
-	return helpers.NewSuccessResponse(data, http.StatusOK)
-}
-
-func HandleGetUserRoute(w http.ResponseWriter, r *http.Request) {
-	res := HandleGetUser(helpers.UserRouteRegex, r.URL.Path)
-	res.Send(w)
+	helpers.NewSuccessResponse(data, http.StatusOK).Send(w)
 }

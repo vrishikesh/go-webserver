@@ -29,11 +29,11 @@ func InitRoutes() *router.RegexRouter {
 	rr.Handler(helpers.PublicRouteRegex, http.MethodGet, http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
 
 	// user related routes
-	rr.HandlerFunc(helpers.UsersRouteRegex, http.MethodGet, handlers.HandleGetUsersRoute)
-	rr.HandlerFunc(helpers.UsersRouteRegex, http.MethodPost, handlers.HandleCreateUserRoute)
-	rr.HandlerFunc(helpers.UserRouteRegex, http.MethodGet, handlers.HandleGetUserRoute)
-	rr.HandlerFunc(helpers.UserRouteRegex, http.MethodPut, handlers.HandleUpdateUserRoute)
-	rr.HandlerFunc(helpers.UserRouteRegex, http.MethodDelete, handlers.HandleRemoveUserRoute)
+	rr.HandlerFunc(helpers.UsersRouteRegex, http.MethodGet, handlers.HandleGetUsers)
+	rr.HandlerFunc(helpers.UsersRouteRegex, http.MethodPost, handlers.HandleCreateUser)
+	rr.HandlerFunc(helpers.UserRouteRegex, http.MethodGet, handlers.HandleGetUser)
+	rr.HandlerFunc(helpers.UserRouteRegex, http.MethodPut, handlers.HandleUpdateUser)
+	rr.HandlerFunc(helpers.UserRouteRegex, http.MethodDelete, handlers.HandleRemoveUser)
 
 	return rr
 }

@@ -43,19 +43,16 @@ func ParseRemoveUser(regex *regexp.Regexp, path string) (*RemoveUserRequest, err
 	return &req, nil
 }
 
-func HandleRemoveUser(regex *regexp.Regexp, path string) *helpers.JsonResponse {
-	req, err := ParseRemoveUser(regex, path)
+func HandleRemoveUser(w http.ResponseWriter, r *http.Request) {
+	req, err := ParseRemoveUser(helpers.UserRouteRegex, r.URL.Path)
 	if err != nil {
-		return helpers.NewErrorResponse(err, http.StatusBadRequest)
+		helpers.NewErrorResponse(err, http.StatusBadRequest).Send(w)
+		return
 	}
 	data, err := RemoveUser(req)
 	if err != nil {
-		return helpers.NewErrorResponse(err, http.StatusInternalServerError)
+		helpers.NewErrorResponse(err, http.StatusInternalServerError).Send(w)
+		return
 	}
-	return helpers.NewSuccessResponse(data, http.StatusNoContent)
-}
-
-func HandleRemoveUserRoute(w http.ResponseWriter, r *http.Request) {
-	res := HandleRemoveUser(helpers.UserRouteRegex, r.URL.Path)
-	res.Send(w)
+	helpers.NewSuccessResponse(data, http.StatusNoContent).Send(w)
 }

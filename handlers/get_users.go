@@ -43,20 +43,17 @@ func ParseGetUsers(values url.Values) (*GetUsersRequest, error) {
 	return &req, nil
 }
 
-func HandleGetUsers(values url.Values) *helpers.JsonResponse {
+func HandleGetUsers(w http.ResponseWriter, r *http.Request) {
+	values := r.URL.Query()
 	req, err := ParseGetUsers(values)
 	if err != nil {
-		return helpers.NewErrorResponse(err, http.StatusBadRequest)
+		helpers.NewErrorResponse(err, http.StatusBadRequest).Send(w)
+		return
 	}
 	users, err := GetUsers(req)
 	if err != nil {
-		return helpers.NewErrorResponse(err, http.StatusInternalServerError)
+		helpers.NewErrorResponse(err, http.StatusInternalServerError).Send(w)
+		return
 	}
-	return helpers.NewSuccessResponse(users, http.StatusOK)
-}
-
-func HandleGetUsersRoute(w http.ResponseWriter, r *http.Request) {
-	values := r.URL.Query()
-	res := HandleGetUsers(values)
-	res.Send(w)
+	helpers.NewSuccessResponse(users, http.StatusOK).Send(w)
 }
