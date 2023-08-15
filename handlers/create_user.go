@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -51,4 +52,10 @@ func HandleCreateUser(data []byte) *helpers.JsonResponse {
 		return helpers.NewErrorResponse(err, http.StatusInternalServerError)
 	}
 	return helpers.NewSuccessResponse(user, http.StatusCreated)
+}
+
+func HandleCreateUserRoute(w http.ResponseWriter, r *http.Request) {
+	b, _ := io.ReadAll(r.Body)
+	res := HandleCreateUser(b)
+	res.Send(w)
 }

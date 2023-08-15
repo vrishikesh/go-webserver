@@ -54,3 +54,8 @@ func HandleRemoveUser(regex *regexp.Regexp, path string) *helpers.JsonResponse {
 	}
 	return helpers.NewSuccessResponse(data, http.StatusNoContent)
 }
+
+func HandleRemoveUserRoute(w http.ResponseWriter, r *http.Request) {
+	res := HandleRemoveUser(helpers.UserRouteRegex, r.URL.Path)
+	res.Send(w)
+}

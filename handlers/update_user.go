@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"regexp"
@@ -65,4 +66,10 @@ func HandleUpdateUser(data []byte, regex *regexp.Regexp, path string) *helpers.J
 		return helpers.NewErrorResponse(err, http.StatusInternalServerError)
 	}
 	return helpers.NewSuccessResponse(user, http.StatusOK)
+}
+
+func HandleUpdateUserRoute(w http.ResponseWriter, r *http.Request) {
+	b, _ := io.ReadAll(r.Body)
+	res := HandleUpdateUser(b, helpers.UserRouteRegex, r.URL.Path)
+	res.Send(w)
 }

@@ -55,3 +55,8 @@ func HandleGetUser(regex *regexp.Regexp, path string) *helpers.JsonResponse {
 	}
 	return helpers.NewSuccessResponse(data, http.StatusOK)
 }
+
+func HandleGetUserRoute(w http.ResponseWriter, r *http.Request) {
+	res := HandleGetUser(helpers.UserRouteRegex, r.URL.Path)
+	res.Send(w)
+}

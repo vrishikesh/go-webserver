@@ -54,3 +54,9 @@ func HandleGetUsers(values url.Values) *helpers.JsonResponse {
 	}
 	return helpers.NewSuccessResponse(users, http.StatusOK)
 }
+
+func HandleGetUsersRoute(w http.ResponseWriter, r *http.Request) {
+	values := r.URL.Query()
+	res := HandleGetUsers(values)
+	res.Send(w)
+}
