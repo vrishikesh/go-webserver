@@ -1,39 +1,35 @@
 package main
 
 import (
+	"embed"
 	"log"
 	"net/http"
-	"time"
 
-	"github.com/vrishikesh/go-webserver/handlers"
-	"github.com/vrishikesh/go-webserver/helpers"
+	"github.com/vrishikesh/go-webserver/app"
 	"github.com/vrishikesh/go-webserver/middlewares"
 	"github.com/vrishikesh/go-webserver/router"
 )
 
+//go:embed configs
+var embedFS embed.FS
+
 func main() {
-	rr := InitRoutes()
+	var err error
+	app.EmbedFS = embedFS
+
+	app.Logger, err = app.NewLogger()
+	if err != nil {
+		log.Fatalf("could not init logger: %s", err)
+	}
+
+	app.Config, err = app.NewConfig(app.EmbedFS, app.Logger)
+	if err != nil {
+		app.Logger.Fatalf("could not init config: %s", err)
+	}
+
+	rr := router.SetupRoutes()
 	loggerMiddleware := middlewares.NewRequestLogger(rr)
 
-	log.Printf("starting server")
-	if err := http.ListenAndServe(":8080", loggerMiddleware); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func InitRoutes() *router.RegexRouter {
-	rr := router.NewRegexRouter()
-
-	// random routes
-	rr.Handler(helpers.TimeRouteRegex, http.MethodGet, handlers.NewTimeHandler(time.RFC1123))
-	rr.Handler(helpers.PublicRouteRegex, http.MethodGet, http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
-
-	// user related routes
-	rr.HandlerFunc(helpers.UsersRouteRegex, http.MethodGet, handlers.HandleGetUsers)
-	rr.HandlerFunc(helpers.UsersRouteRegex, http.MethodPost, handlers.HandleCreateUser)
-	rr.HandlerFunc(helpers.UserRouteRegex, http.MethodGet, handlers.HandleGetUser)
-	rr.HandlerFunc(helpers.UserRouteRegex, http.MethodPut, handlers.HandleUpdateUser)
-	rr.HandlerFunc(helpers.UserRouteRegex, http.MethodDelete, handlers.HandleRemoveUser)
-
-	return rr
+	app.Logger.Printf("starting server")
+	app.Logger.Fatal(http.ListenAndServe(":8080", loggerMiddleware))
 }
