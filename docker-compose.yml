@@ -1,0 +1,53 @@
+version: "3"
+
+services:
+  backend:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - 80:80
+    networks:
+      - default
+    depends_on:
+      - postgres
+    deploy:
+      restart_policy:
+        condition: on-failure
+      replicas: 1
+
+  postgres:
+    image: postgres
+    command: postgres -c logging_collector=on -c log_destination=stderr -c log_directory=/logs -c max_connections=300 -c shared_buffers=256MB
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: mysecretuser
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: monolith
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./logs/postgres:/logs
+    networks:
+      - default
+    deploy:
+      restart_policy:
+        condition: on-failure
+      replicas: 1
+  
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+    networks:
+      - default
+    depends_on:
+      - postgres
+    deploy:
+      restart_policy:
+        condition: on-failure
+      replicas: 1
+    
+networks:
+  default:
+    driver: bridge

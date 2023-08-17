@@ -19,3 +19,8 @@
 
 # Go workspace file
 go.work
+
+# Ignore for this project
+data
+logs
+dist

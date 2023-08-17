@@ -31,5 +31,5 @@ func main() {
 	loggerMiddleware := middlewares.NewRequestLogger(rr)
 
 	app.Logger.Printf("starting server")
-	app.Logger.Fatal(http.ListenAndServe(":8080", loggerMiddleware))
+	app.Logger.Fatal(http.ListenAndServe(app.Config.AppHost, loggerMiddleware))
 }
