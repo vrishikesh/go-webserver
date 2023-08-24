@@ -15,7 +15,6 @@ var Config *config
 type config struct {
 	AppEnv          string `env:"APP_ENV" defaultEnv:"development"`
 	AppHost         string `env:"APP_HOST"`
-	SomethingRandom string `env:"SOMETHING_RANDOM" defaultEnv:"random"`
 	DbHost          string `env:"DB_HOST"`
 	DbPort          int    `env:"DB_PORT"`
 	DbUser          string `env:"DB_USER"`
@@ -63,12 +62,12 @@ func ParseConfig(embedFS embed.FS, logger *log.Logger) (*config, error) {
 		key := field.Tag.Get("env")
 		defaultEnv := field.Tag.Get("defaultEnv")
 
-		value := m[key]
+		value := strings.TrimSpace(m[key])
 		if value == "" {
 			value = defaultEnv
 		}
 		if value == "" {
-			return nil, fmt.Errorf("could not read config key %s", key)
+			return nil, fmt.Errorf("could not read config for key %s", key)
 		}
 
 		switch {
@@ -81,7 +80,7 @@ func ParseConfig(embedFS embed.FS, logger *log.Logger) (*config, error) {
 			}
 			f.SetInt(i)
 		default:
-			logger.Fatalf("could not set key for %s", key)
+			logger.Fatalf("could not set value for key %s", key)
 		}
 	}
 
